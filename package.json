@@ -1,5 +1,5 @@
 {
-  "name": "marco-legal",
+  "name": "backend-proyect",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -17,10 +17,10 @@
     "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.2",
-    "morgan": "^1.10.0",
-    "pg": "^8.13.1",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.5"
+    "morgan": "1.10.0",
+    "pg": "8.13.1",
+    "pg-hstore": "2.3.4",
+    "sequelize": "6.37.5"
   },
   "devDependencies": {
     "express": "^4.21.1",

@@ -4,7 +4,7 @@ import { createusers, deleteusers, getusers, insertusers, updateusers } from '..
 const router = Router()
 
 // Obtener todos los usuarios
-router.get('/users', getusers)
+router.get('/users/', getusers)
 
 // Obtener un usuario por ID
 router.get('/users/:idUser', createusers)

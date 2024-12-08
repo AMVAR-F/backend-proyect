@@ -1,11 +1,10 @@
 import { Router } from 'express'
-
 import { deleteTeam, getTeamById, getTeams, insertTeam, updateTeam } from '../controllers/team.controllers.js'
 
 const router = Router()
 
 // Obtener todos los usuarios
-router.get('/teams', getTeams)
+router.get('/teams/', getTeams)
 
 // Obtener un usuario por ID
 router.get('/teams/:teamId', getTeamById)

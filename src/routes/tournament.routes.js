@@ -16,4 +16,4 @@ router.post('/championships', insertChampionship);
 router.delete('/championships/:championshipId', deleteChampionship);
 router.put('/championships/:championshipId', updateChampionship);
 
-export default router;
+export default router

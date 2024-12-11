@@ -7,7 +7,7 @@ export const getTeams = async (req, res) => {
     res.json(rows)
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al obtener los equipos' })
+    res.status(500).json({ message:  'Error retrieving the teams' })
   }
 }
 
@@ -22,7 +22,7 @@ export const getTeamById = async (req, res) => {
     res.json(rows[0])
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al obtener el equipo' })
+    res.status(500).json({ message: 'Error retrieving the team' })
   }
 }
 
@@ -55,7 +55,7 @@ export const insertTeam = async (req, res) => {
     res.status(201).json(result.rows[0])
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al crear el equipo' })
+    res.status(500).json({ message: 'Error creating the team' })
   }
 }
 
@@ -85,7 +85,7 @@ export const deleteTeam = async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK')
     console.error(error)
-    res.status(500).json({ message: 'Error al eliminar el equipo' })
+    res.status(500).json({ message: 'Error deleting the team' })
   } finally {
     client.release()
   }
@@ -123,6 +123,6 @@ export const updateTeam = async (req, res) => {
     res.json(rows[0])
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al actualizar el equipo' })
+    res.status(500).json({ message: 'Error updating the team' })
   }
 }

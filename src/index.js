@@ -6,6 +6,7 @@ import userRoutes from './routes/use.routes.js'; // Corrección en el nombre del
 import teamRoutes from './routes/team.routes.js';
 import tournamentRoutes from './routes/tournament.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import paymentRoutes from './routes/payment.routes.js'
 
 const app = express();
 
@@ -17,7 +18,8 @@ app.use(cookieParser());
 // Rutas
 app.use('/api/users', userRoutes); // Prefijo para las rutas de usuarios
 app.use('/api/teams', teamRoutes); // Prefijo para las rutas de equipos
-app.use('/api/tournaments', tournamentRoutes); // Prefijo para las rutas de torneos
+app.use('/api/tournaments', tournamentRoutes); 
+app.use('/api/payments', paymentRoutes); 
 app.use('/api/auth', authRoutes); // Prefijo para las rutas de autenticación
 
 // Iniciar el servidor

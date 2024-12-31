@@ -28,11 +28,6 @@ export const getChampionshipById = async (req, res) => {
 
 // Insertar un nuevo campeonato
 export const insertChampionship = async (req, res) => {
-  const { data } = req.body
-
-  if (!data) {
-    return res.status(400).json({ message: 'Falta el objeto data' })
-  }
 
   const {
     championship_name: championshipName,
@@ -42,7 +37,7 @@ export const insertChampionship = async (req, res) => {
     end_date: endDate,
     start_inscriptions: startInscriptions,
     end_inscriptions: endInscriptions
-  } = data
+  } = req.body
 
   if (!championshipName) {
     return res.status(400).json({ message: 'Faltan campos requeridos' })
@@ -98,11 +93,6 @@ export const deleteChampionship = async (req, res) => {
 // Actualizar un campeonato por ID
 export const updateChampionship = async (req, res) => {
   const { championshipId } = req.params
-  const { data } = req.body
-
-  if (!data) {
-    return res.status(400).json({ message: 'Data object is missing' })
-  }
 
   const {
     championship_name: championshipName,
@@ -111,8 +101,8 @@ export const updateChampionship = async (req, res) => {
     end_date: endDate,
     start_inscriptions: startInscriptions,
     end_inscriptions: endInscriptions
-  } = data
-
+  } = req.body;
+  
   if (!championshipName) {
     return res.status(400).json({ message: 'Missing required fields' })
   }

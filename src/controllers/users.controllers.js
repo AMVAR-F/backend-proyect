@@ -1,38 +1,31 @@
-import {pool} from '../database/conection.js'
+import { pool } from '../database/conection.js';
 
 export const getusers = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM users')
-    res.json(rows)
+    const { rows } = await pool.query('SELECT * FROM users');
+    res.json(rows);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Error al obtener los usuarios' })
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving the users' });
   }
-}
+};
 
 export const createusers = async (req, res) => {
-  const { idUser } = req.params
+  const { idUser } = req.params;
   try {
-    const { rows } = await pool.query('SELECT * FROM users WHERE id_user = $1', [idUser])
+    const { rows } = await pool.query('SELECT * FROM users WHERE id_user = $1', [idUser]);
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' })
+      return res.status(404).json({ message: 'User not found' });
     }
-    res.json(rows[0])
+    res.json(rows[0]);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Error' })
+    console.error(error);
+    res.status(500).json({ message: 'Error' });
   }
-}
+};
 
 export const insertusers = async (req, res) => {
-  const { data } = req.body;
-
-  // Validar que el objeto data esté definido
-  if (!data) {
-    return res.status(400).json({ message: 'Data object is missing' });
-  }
-
-  const { firstname, lastname, id_card: idCard, photo = '', password, status = true, email, username } = data;
+  const { firstname, lastname, id_card: idCard, photo = '', password, status = true, email, username } = req.body;
 
   if (!firstname || !lastname || !idCard || !password || !email) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -42,7 +35,7 @@ export const insertusers = async (req, res) => {
     const result = await pool.query(
       `INSERT INTO users (firstname, lastname, id_card, photo, password, status, username, email) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, 
-       [firstname, lastname, idCard, photo, password, status, username, email]
+      [firstname, lastname, idCard, photo, password, status, username, email]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -51,8 +44,6 @@ export const insertusers = async (req, res) => {
   }
 };
 
-
-//Borrar
 export const deleteusers = async (req, res) => {
   const { idUser } = req.params;
 
@@ -61,17 +52,13 @@ export const deleteusers = async (req, res) => {
   try {
     await client.query('BEGIN');
 
-   
     await client.query('DELETE FROM teams WHERE id_td = $1', [idUser]);
-
-    
     await client.query('DELETE FROM admins WHERE id_user = $1', [idUser]);
     await client.query('DELETE FROM technical_directors WHERE id_user = $1', [idUser]);
     await client.query('DELETE FROM treasurers WHERE id_user = $1', [idUser]);
 
-
     const { rows, rowCount } = await client.query('DELETE FROM users WHERE id_user = $1 RETURNING *', [idUser]);
-    
+
     if (rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'User not found' });
@@ -87,15 +74,11 @@ export const deleteusers = async (req, res) => {
   } finally {
     client.release();
   }
-}
+};
+
 export const updateusers = async (req, res) => {
   const { idUser } = req.params;
-  const { data } = req.body;
-  if (!data) {
-    return res.status(400).json({ message: 'Data object is missing' });
-  }
-
-  const { firstname, lastname, id_card: idCard, photo = '', password, status = true, email, username } = data;
+  const { firstname, lastname, id_card: idCard, photo = '', password, status = true, email, username } = req.body;
 
   if (!firstname || !lastname || !idCard || !password || !email) {
     return res.status(400).json({ message: 'Missing required fields' });

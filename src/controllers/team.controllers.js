@@ -1,21 +1,28 @@
 import { pool } from '../database/conection.js';
+import {
+  getAllTeams,
+  getTeamById as getTeamByIdModel,
+  createTeam,
+  deleteTeamById,
+  deleteTeamRelations,
+  updateTeamById,
+} from '../models/team.models.js';
 
-// Obtener todos los equipos
+
 export const getTeams = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM teams');
-    res.json(rows);
+    const teams = await getAllTeams();
+    res.json(teams);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving the teams' });
   }
 };
 
-// Obtener un equipo por ID
 export const getTeamById = async (req, res) => {
   const { teamId } = req.params;
   try {
-    const { rows } = await pool.query('SELECT * FROM teams WHERE team_id = $1', [teamId]);
+    const rows = await getTeamByIdModel(teamId);
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Team not found' });
     }
@@ -26,14 +33,13 @@ export const getTeamById = async (req, res) => {
   }
 };
 
-// Insertar un nuevo equipo
 export const insertTeam = async (req, res) => {
   const {
     team_name: teamName,
     id_scolor: idScolor,
     id_td: idTd,
     status = true,
-    created_at: createdAt = new Date()
+    created_at: createdAt = new Date(),
   } = req.body;
 
   if (!teamName || !idScolor || !idTd) {
@@ -41,40 +47,29 @@ export const insertTeam = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO teams (team_name, id_scolor, id_td, status, created_at)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [teamName, idScolor, idTd, status, createdAt]
-    );
-    res.status(201).json(result.rows[0]);
+    const team = await createTeam(teamName, idScolor, idTd, status, createdAt);
+    res.status(201).json(team);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating the team' });
   }
 };
 
-// Eliminar un equipo por ID
 export const deleteTeam = async (req, res) => {
   const { teamId } = req.params;
 
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
+    await deleteTeamRelations(client, teamId);
+    const { rows, rowCount } = await deleteTeamById(client, teamId);
 
-    // Borrar relaciones con tablas relacionadas
-    await client.query('DELETE FROM team_players WHERE team_id = $1', [teamId]);
-    await client.query('DELETE FROM champion_teams WHERE team_id = $1', [teamId]);
-
-    // Borrar el equipo
-    const { rows, rowCount } = await client.query('DELETE FROM teams WHERE team_id = $1 RETURNING *', [teamId]);
     if (rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Team not found' });
     }
 
     await client.query('COMMIT');
-
     res.json({ message: 'Team deleted successfully', team: rows[0] });
   } catch (error) {
     await client.query('ROLLBACK');
@@ -85,15 +80,13 @@ export const deleteTeam = async (req, res) => {
   }
 };
 
-// Actualizar un equipo por ID
 export const updateTeam = async (req, res) => {
   const { teamId } = req.params;
-
   const {
     team_name: teamName,
     id_scolor: idScolor,
     id_td: idTd,
-    status = true
+    status = true,
   } = req.body;
 
   if (!teamName || !idScolor || !idTd) {
@@ -101,11 +94,7 @@ export const updateTeam = async (req, res) => {
   }
 
   try {
-    const { rows } = await pool.query(
-      `UPDATE teams SET team_name = $1, id_scolor = $2, id_td = $3, status = $4
-       WHERE team_id = $5 RETURNING *`,
-      [teamName, idScolor, idTd, status, teamId]
-    );
+    const rows = await updateTeamById(teamId, teamName, idScolor, idTd, status);
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Team not found' });
     }

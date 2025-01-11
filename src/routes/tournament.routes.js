@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getChampionships,
+  getAllChampionships,
   getChampionshipById,
   insertChampionship,
   deleteChampionship,
@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 
-router.get('/championships', getChampionships);
+router.get('/championships', getAllChampionships);
 router.get('/championships/:championshipId', getChampionshipById);
 router.post('/championships', insertChampionship);
 router.delete('/championships/:championshipId', deleteChampionship);

@@ -1,9 +1,16 @@
 import { pool } from '../database/conection.js';
+import { 
+  getAllUsers, 
+  getUserById, 
+  insertUser, 
+  deleteUserById, 
+  updateUserById 
+} from '../models/users.models.js';
 
 export const getusers = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM users');
-    res.json(rows);
+    const users = await getAllUsers();
+    res.json(users);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving the users' });
@@ -13,11 +20,11 @@ export const getusers = async (req, res) => {
 export const createusers = async (req, res) => {
   const { idUser } = req.params;
   try {
-    const { rows } = await pool.query('SELECT * FROM users WHERE id_user = $1', [idUser]);
-    if (rows.length === 0) {
+    const users = await getUserById(idUser);
+    if (users.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(rows[0]);
+    res.json(users[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error' });
@@ -32,12 +39,8 @@ export const insertusers = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO users (firstname, lastname, id_card, photo, password, status, username, email) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, 
-      [firstname, lastname, idCard, photo, password, status, username, email]
-    );
-    res.status(201).json(result.rows[0]);
+    const user = await insertUser({ firstname, lastname, idCard, photo, password, status, email, username });
+    res.status(201).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error' });
@@ -57,7 +60,7 @@ export const deleteusers = async (req, res) => {
     await client.query('DELETE FROM technical_directors WHERE id_user = $1', [idUser]);
     await client.query('DELETE FROM treasurers WHERE id_user = $1', [idUser]);
 
-    const { rows, rowCount } = await client.query('DELETE FROM users WHERE id_user = $1 RETURNING *', [idUser]);
+    const { rows, rowCount } = await deleteUserById(idUser, client);
 
     if (rowCount === 0) {
       await client.query('ROLLBACK');
@@ -85,15 +88,11 @@ export const updateusers = async (req, res) => {
   }
 
   try {
-    const { rows } = await pool.query(
-      `UPDATE users SET firstname = $1, lastname = $2, id_card = $3, photo = $4, password = $5, status = $6, username = $7, email = $8 WHERE id_user = $9 
-      RETURNING *`, 
-      [firstname, lastname, idCard, photo, password, status, username, email, idUser]
-    );
-    if (rows.length === 0) {
+    const users = await updateUserById(idUser, { firstname, lastname, idCard, photo, password, status, email, username });
+    if (users.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(rows[0]);
+    res.json(users[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al actualizar el usuario' });

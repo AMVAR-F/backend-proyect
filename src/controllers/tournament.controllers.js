@@ -1,13 +1,20 @@
 import { pool } from '../database/conection.js'
+import {
+  getAllChampionships as getAllChampionshipsM,
+  getChampionshipById as getChampionshipByIdM,
+  insertChampionship as insertChampionshipM,
+  deleteChampionship as deleteChampionshipM,
+  updateChampionship as updateChampionshipM
+} from '../models/tournament.models.js'
 
 // Obtener todos los campeonatos
-export const getChampionships = async (req, res) => {
+export const getAllChampionships = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM championships')
-    res.json(rows)
+    const championships = await getAllChampionshipsM()
+    res.json(championships)
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al obtener los campeonatos' })
+    res.status(500).json({ message: 'Error retrieving the championships' })
   }
 }
 
@@ -15,14 +22,14 @@ export const getChampionships = async (req, res) => {
 export const getChampionshipById = async (req, res) => {
   const { championshipId } = req.params
   try {
-    const { rows } = await pool.query('SELECT * FROM championships WHERE championship_id = $1', [championshipId])
-    if (rows.length === 0) {
-      return res.status(404).json({ message: 'Campeonato no encontrado' })
+    const championships = await getChampionshipByIdM(championshipId);
+    if (championships.length === 0) {
+      return res.status(404).json({ message: 'championship not found' })
     }
-    res.json(rows[0])
+    res.json(championships[0])
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Error al obtener el campeonato' })
+    res.status(500).json({ message: 'Error' })
   }
 }
 
@@ -33,23 +40,19 @@ export const insertChampionship = async (req, res) => {
     championship_name: championshipName,
     status = true,
     created_at: createdAt = new Date(),
-    start_date: Startdate,
+    start_date: startDate,
     end_date: endDate,
     start_inscriptions: startInscriptions,
     end_inscriptions: endInscriptions
   } = req.body
 
-  if (!championshipName) {
-    return res.status(400).json({ message: 'Faltan campos requeridos' })
+  if (!championshipName|| !startDate|| !endDate|| !startInscriptions|| !endInscriptions) {
+    return res.status(400).json({ message: 'Missing required fields' })
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO championships (championship_name, status, created_at, start_date, end_date, start_inscriptions, end_inscriptions)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [championshipName, status, createdAt, Startdate, endDate, startInscriptions, endInscriptions]
-    )
-    res.status(201).json(result.rows[0])
+    const championships = await insertChampionshipM ({championshipName, status, createdAt, startDate, endDate, startInscriptions, endInscriptions})
+    res.status(201).json(championships)
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error creating the championship' })
@@ -72,7 +75,7 @@ export const deleteChampionship = async (req, res) => {
     await client.query('DELETE FROM champion_games WHERE championship_id = $1', [championshipId])
 
     // Borrar el campeonato
-    const { rows, rowCount } = await client.query('DELETE FROM championships WHERE championship_id = $1 RETURNING *', [championshipId])
+    const { rows, rowCount } = await deleteChampionshipM (championshipId,client)
     if (rowCount === 0) {
       await client.query('ROLLBACK')
       return res.status(404).json({ message: 'Campeonato no encontrado' })
@@ -97,7 +100,7 @@ export const updateChampionship = async (req, res) => {
   const {
     championship_name: championshipName,
     status = true,
-    start_date: Startdate,
+    start_date: startDate,
     end_date: endDate,
     start_inscriptions: startInscriptions,
     end_inscriptions: endInscriptions
@@ -108,15 +111,11 @@ export const updateChampionship = async (req, res) => {
   }
 
   try {
-    const { rows } = await pool.query(
-      `UPDATE championships SET championship_name = $1, status = $2, start_date = $3, end_date = $4, start_inscriptions = $5, end_inscriptions = $6
-       WHERE championship_id = $7 RETURNING *`,
-      [championshipName, status, Startdate, endDate, startInscriptions, endInscriptions, championshipId]
-    )
-    if (rows.length === 0) {
+    const championships = await updateChampionshipM (championshipId, {championshipName, status, startDate, endDate, startInscriptions, endInscriptions})
+    if (championships.length === 0) {
       return res.status(404).json({ message: 'Championship not found' })
     }
-    res.json(rows[0])
+    res.json(championships[0])
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error updating the championship' })

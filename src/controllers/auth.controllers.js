@@ -1,8 +1,8 @@
-import { pool } from '../database/conection.js';
-import bcrypt from 'bcrypt';
+import * as UserModel from '../models/auth.models.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 
-// Registrar un nuevo usuario
 export const register = async (req, res) => {
   const { email, username, password } = req.body;
 
@@ -11,38 +11,20 @@ export const register = async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const result = await pool.query(
-      `INSERT INTO users (email, username, password) 
-       VALUES ($1, $2, $3) RETURNING *`, 
-      [email, username, hashedPassword]
-    );
-
-    const newUser = result.rows[0];
+    const newUser = await UserModel.createUser(email, username, password);
     delete newUser.password;
 
     const jwtSecret = process.env.JWT_SECRET || "secret123"; 
-    jwt.sign(
-      { id: newUser.id },
-      jwtSecret,
-      { expiresIn: '1h' }, 
-      (err, token) => {
-        if (err) {
-          return res.status(500).json({ message: 'Error generating token' });
-        }
+    const token = jwt.sign({ id: newUser.id }, jwtSecret, { expiresIn: '1h' });
 
-        res.status(201).json({ token });
-      }
-    );
-
+    res.status(201).json({ token });
+    
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating the user' });
+    res.status(500).json({ message: 'This email already exists'});
   }
 };
 
-// Función de inicio de sesión
 export const login = async (req, res) => { 
   const { username, password } = req.body;
 
@@ -51,55 +33,151 @@ export const login = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [username]);
+    const user = await UserModel.findUserByUsername(username);
 
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(401).json({ message: 'Incorrect username' });
     }
-
-    const user = result.rows[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
+  
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
     delete user.password;
 
-    const adminResult = await pool.query(`SELECT * FROM admins WHERE id_user = $1`, [user.id_user]);
-    const tdResult = await pool.query(`SELECT * FROM technical_directors WHERE id_user = $1`, [user.id_user]);
+    const adminResult = await UserModel.findAdminByUserId(user.id_user);
+    const tdResult = await UserModel.findTechnicalDirectorByUserId(user.id_user);
 
-    if (adminResult.rows.length === 0 && tdResult.rows.length === 0) {
+    if (adminResult.length === 0 && tdResult.length === 0) {
       return res.status(401).json({ message: 'You do not have permission to access' });
     }
 
-    const isAdmin = adminResult.rows.length > 0;
-    const isTechnicalDirector = tdResult.rows.length > 0;
+    const isAdmin = adminResult.length > 0;
+    const isTechnicalDirector = tdResult.length > 0;
 
     const jwtSecret = process.env.JWT_SECRET || "secret123";
-    jwt.sign({ id: user.id_user, isAdmin, isTechnicalDirector }, jwtSecret, { expiresIn: '1h' }, (err, token) => {
-      if (err) {
-        return res.status(500).json({ message: 'Error generating token' });
-      }
+    const token = jwt.sign({ id: user.id_user, isAdmin, isTechnicalDirector }, jwtSecret, { expiresIn: '1h' });
 
-      res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
 
-      const welcomeMessage = isAdmin ? 'Welcome, Admin' : 'Welcome, Technical Director';
-
-      res.json({ token, message: welcomeMessage });
-    });
+    const welcomeMessage = isAdmin ? 'Welcome, Admin' : 'Welcome, Technical Director';
+    res.json({ token, message: welcomeMessage });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error logging in' });
+    res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 };
 
-// Cerrar sesión
 export const logout = (req, res) => {
   res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production" });
   res.status(200).json({ message: "Successfully logged out" });
 };
 
-// Perfil (placeholder)
-export const profile = (req, res) => res.send('profile');
+// Perfil con funcionalidad de editar
+export const profile = async (req, res) => {
+  try {
+
+    const userId = req.user.id; 
+    const userProfileData = await UserModel.findUserById(userId); 
+
+    if (!userProfileData) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(userProfileData);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching profile data', error: error.message });
+  }
+};
+
+// Método para actualizar el perfil
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+   
+   // Si se proporciona una nueva contraseña
+   if(req.body.password){
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+   }
+
+   await UserModel.updateUserProfile(userId, req.body);
+    
+   res.status(200).json({ message: 'Profile updated successfully' });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
+// Función para solicitar el restablecimiento de contraseña
+export const requestResetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const user = await UserModel.findUserByEmail(email); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const token = jwt.sign({ id: user.id_user }, process.env.JWT_SECRET || "secret123", { expiresIn: '1h' });
+
+    // Configura Nodemailer para enviar el correo electrónico
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Restablecimiento de Contraseña',
+      text: `Haz clic en el siguiente enlace para restablecer tu contraseña: http://localhost:3000/api/auth/reset-password/${token}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    
+    res.status(200).json({ message: 'Correo enviado para restablecer la contraseña' });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al solicitar el restablecimiento de contraseña', error: error.message });
+  }
+};
+
+// Función para restablecer la contraseña
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    return res.status(400).json({ message: 'New password is required' });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "secret123");
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    await UserModel.updateUserPassword(decodedToken.id, hashedPassword); // Asegúrate de agregar este método en tu modelo
+
+    res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: 'Token inválido o expirado', error: error.message });
+  }
+};

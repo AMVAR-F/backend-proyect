@@ -7,6 +7,7 @@ import teamRoutes from './routes/team.routes.js';
 import tournamentRoutes from './routes/tournament.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import paymentRoutes from './routes/payment.routes.js'
+import ReportRoutes from './routes/reports.routes.js'
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/tournaments', tournamentRoutes); 
 app.use('/api/payments', paymentRoutes); 
 app.use('/api/auth', authRoutes); 
+app.use('/api/reports', ReportRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

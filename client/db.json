@@ -1,0 +1,14 @@
+{
+    "users": [
+      { "id": 1, "firstname": "Alejandro", "lastname": "Sanchez", "dni": "29345789", "typeofuser": "Technical Director", "gender": "Male", "dob": "1990-01-15", "username": "angelavillamizar900@gmail.com", "password": "4567" },
+      { "id": 2, "firstname": "Juan", "lastname": "Perez", "dni": "12345678", "typeofuser": "Referee", "gender": "Male", "dob": "1985-07-25", "username": "angel@gmail.com", "password": "12345" }
+    ],
+    "payments": [
+      { "id": 1, "team": "Los Relámpagos", "delegate": "John Doe", "amount": 100, "currency": "USD", "status": "Pagado", "history": [] },
+      { "id": 2, "team": "Las Águilas Doradas", "delegate": "Jane Smith", "amount": 200, "currency": "EUR", "status": "Pendiente", "history": [] },
+      { "id": 3, "team": "Los Titanes", "delegate": "Alice Johnson", "amount": 150, "currency": "GBP", "status": "Pagado", "history": [] },
+      { "id": 4, "team": "Las Panteras Negras", "delegate": "Bob Brown", "amount": 120, "currency": "USD", "status": "Pendiente", "history": [] },
+      { "id": 5, "team": "Los Guerreros", "delegate": "Charlie Davis", "amount": 180, "currency": "USD", "status": "Pagado", "history": [] }
+    ]
+  }
+  

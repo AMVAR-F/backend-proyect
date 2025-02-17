@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Khitan+Small+Script&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+.code-body{
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: url('../assets/images/fondo.JPG') no-repeat;
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    justify-content: center;
+    min-height: 100vh;
+
+}
+.verification-container {
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin: auto;
+  transform: translateY(50%);
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: #321f1f;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .otp-inputs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .otp-inputs input {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .verify-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .verify-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .resend-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 1rem;
+  }
+  
+  .resend-link {
+    color: #007bff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .resend-link:hover {
+    text-decoration: underline;
+  }
+  /* Responsive Styles */
+@media (max-width: 768px) {
+    .login-wrapper {
+        transform: translateY(-10%);
+    }
+
+    .login-wrapper h1 {
+        font-size: 1.8rem;
+    }
+
+    .login-wrapper .input-box {
+        padding: 5px 15px;
+    }
+
+    .input-box input {
+        font-size: 14px;
+    }
+
+    .remember-forgot {
+        font-size: 12px;
+    }
+
+    .login-wrapper button {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-wrapper {
+        width: 100%;
+        transform: translateY(10%);
+    }
+
+    .login-wrapper h1 {
+        font-size: 1.5rem;
+    }
+
+    .input-box input {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+
+    .login-wrapper button {
+        font-size: 13px;
+        height: 40px;
+    }
+
+    .remember-forgot {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .remember-forgot a {
+        margin-top: 5px;
+    }
+}
+
+  

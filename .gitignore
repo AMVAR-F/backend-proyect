@@ -1,4 +1,4 @@
 node_modules
 .env
 conection.js
-src/config.js
+./src/config.js

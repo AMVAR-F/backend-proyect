@@ -3,13 +3,14 @@ import { HashRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { CSpinner, useColorModes } from '@coreui/react';
 import './scss/style.scss';
+import LoginForm from './views/login/LoginForm';
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'));
 
 // Pages
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
-
+const Register = React.lazy(() => import('./views/register/register'));
 const ForgotPassword = React.lazy(() => import('./views/login/forgot-password'));
 const Code = React.lazy(() => import('./views/login/code'));
 const NewPassword = React.lazy(() => import('./views/login/newpassword'));
@@ -20,7 +21,6 @@ const Groups = React.lazy(() => import('./views/matches/groups/principal'));
 const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
 const Results = React.lazy(() => import('./views/matches/results/result'));
 const Payments = React.lazy(() => import('./views/payments/App'));
-import LoginForm from './views/login/LoginForm';
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -57,7 +57,7 @@ const App = () => {
           {!isAuthenticated ? (
             <>
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-              
+              <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/code" element={<Code />} />
               <Route path="/newpassword" element={<NewPassword />} />

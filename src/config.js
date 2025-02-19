@@ -5,3 +5,4 @@ export const DB_PASSWORD = 'eric758999'
 export const DB_DATABASE = 'GESTDEPBD'
 
 export const BD_PORT = 5432
+//configuracion de bd

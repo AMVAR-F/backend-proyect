@@ -1,27 +1,18 @@
-import { Router } from 'express'
+import { Router } from 'express';
 import {
-    getusers,
-    createusers,
-    insertusers,
-    deleteusers,
-    updateusers,
-  } from '../controllers/users.controllers.js';
+  getusers,
+  getuser,
+  createusers, 
+  updateusers,
+  deleteusers
+} from '../controllers/users.controllers.js';
 
-const router = Router()
+const router = Router();
 
-// Obtener todos los usuarios
-router.get('/users/',getusers)
+router.get('/users', getusers);
+router.get('/users/:id', getuser);
+router.post('/users', createusers); 
+router.put('/users/:id', updateusers);
+router.delete('/users/:id', deleteusers);
 
-// Obtener un usuario por ID
-router.get('/users/:idUser',createusers)
-
-// Crear un nuevo usuario
-router.post('/users', insertusers)
-
-// Eliminar un usuario por ID
-router.delete('/users/:idUser', deleteusers)
-
-// Actualizar un usuario por ID
-router.put('/users/:idUser', updateusers)
-
-export default router
+export default router;

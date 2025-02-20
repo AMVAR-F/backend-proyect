@@ -1,58 +1,46 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { logoutRequest } from '../../views/api/auth';
 import {
   CAvatar,
-  CBadge,
   CDropdown,
-  CDropdownDivider,
-  CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react';
-import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
-  cilSettings,
-  cilTask,
-  cilUser,
-} from '@coreui/icons';
+import { cilLockLocked,} from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
-
-import avatar8 from './../../assets/images/avatars/1.jpg';
+import avatar8 from './../../assets/images/avatars/7.jpg';
 
 const AppHeaderDropdown = () => {
-  return (
-    <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
-      </CDropdownToggle>
-      {/* <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
+  const navigate = useNavigate();
 
-        <CDropdownItem as={NavLink} to="/account">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
+ 
 
-        <CDropdownItem>
-          <CIcon icon={cilSettings} className="me-2" />
-          Settings
-        </CDropdownItem>
+  const handleLogout = async () => {
+      try {
+          await logoutRequest();
+          localStorage.removeItem('jwtToken'); // Limpia el token JWT del localStorage
+          navigate('/login');
+      } catch (error) {
+          console.error('Error logging out:', error);
+          alert("Error logging out. Please try again.");
+      }
+  };
 
-        <CDropdownDivider />
-
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
-        </CDropdownItem>
-      </CDropdownMenu> */}
-    </CDropdown>
-  );
+   return (
+        <CDropdown variant="nav-item">
+            <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}> {/* <-- AÑADIDO */}
+                <CAvatar src={avatar8} size="md" /> {/* <-- AÑADIDO */}
+            </CDropdownToggle>
+            <CDropdownMenu className="pt-0" placement="bottom-end">
+                <CDropdownItem onClick={handleLogout}>
+                    <CIcon icon={cilLockLocked} className="me-2" />
+                    Log Out
+                </CDropdownItem>
+            </CDropdownMenu>
+        </CDropdown>
+    );
 };
 
 export default AppHeaderDropdown;

@@ -1,41 +1,41 @@
-import React, { useState } from 'react'
-import '../../css/login.css'
-import { FaRegUser, FaUserLock } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
-import { CAvatar } from '@coreui/react'
-import Logo from '../../assets/images/logo_1.png'
+import React, { useState } from 'react';
+import '../../css/login.css';
+import { FaRegUser, FaUserLock } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom'; // Importa useNavigate para redireccionar
+import { CAvatar } from '@coreui/react';
+import Logo from '../../assets/images/logo_1.png';
+import { loginRequest } from '../api/auth'; // Importa la función de inicio de sesión
 
 const LoginForm = ({ onLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  
- const errorStyle = { color: 'red', fontWeight: 'bold'}
-  
-  
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Lógica de autenticación local basada en las credenciales
-    if (username === 'admin' && password === 'admin') {
+  const navigate = useNavigate(); // Hook para redireccionar
+
+  const errorStyle = { color: 'red', fontWeight: 'bold' };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const credentials = { username, password };
+      console.log('Credenciales enviadas:', credentials);
+  
+      const response = await loginRequest(credentials);
+      console.log('Respuesta del servidor:', response);
+  
       setIsAuthenticated(true);
       onLogin();
-    } else if (username === 'angelo' && password === 'angelo123') {
-      setIsAuthenticated(true);
-      onLogin();
-      if (username !== 'admin') {
-        window.location.href = 'https://example.com/not-authorized';
-      }
-    } else {
+      navigate('/dashboard');
+    } catch (error) {
       setIsAuthenticated(false);
-      setError(<span style={errorStyle}>Invalid credentials</span>);
-      
-      
-     
+      setError(<span style={errorStyle}>{error.message || 'Invalid credentials'}</span>);
+      console.error('Error en el inicio de sesión:', error);
     }
-  }
- 
+  };
+
   return (
     <div className="login-body">
       <div className="login-wrapper">
@@ -66,7 +66,7 @@ const LoginForm = ({ onLogin }) => {
             <FaUserLock className="icon" />
           </div>
           {error && <p className="error-message">{error}</p>} {/* Mostrar error si existe */}
-          <div className="remember-forgot">
+          <div className="mber-forgot">
             <label>
               <input type="checkbox" /> Remember me
             </label>
@@ -82,7 +82,7 @@ const LoginForm = ({ onLogin }) => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;

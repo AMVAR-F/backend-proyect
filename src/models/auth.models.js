@@ -1,6 +1,6 @@
-// userModel.js
 import { pool } from '../database/conection.js';
 import bcrypt from 'bcrypt';
+
 
 export const createUser = async (email, username, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -11,6 +11,7 @@ export const createUser = async (email, username, password) => {
   );
   return result.rows[0];
 };
+
 
 export const findUserByUsername = async (username) => {
   const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [username]);
@@ -52,11 +53,11 @@ export const findUserByEmail = async (email) => {
   const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
   return result.rows[0]; 
 };
-
-// Método para actualizar la contraseña del usuario
-export const updateUserPassword = async (userId, newPassword) => {
-  await pool.query(
-    `UPDATE users SET password = $1 WHERE id_user = $2`,
-    [newPassword, userId]
-  );
-};
+ // Método para actualizar la contraseña del usuario
+// export const updateUserPassword = async (userId, newPassword) => {
+//   const hashedPassword = await bcrypt.hash(newPassword, 10); // Hashea la nueva contraseña
+//   await pool.query(
+//     `UPDATE users SET password = $1 WHERE id_user = $2`,
+//     [hashedPassword, userId]
+//   );
+// };

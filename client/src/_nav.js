@@ -99,7 +99,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Log out',
-    to: '/users/',
+    to: '/login/logout/log_out/',
     icon: <IoLogOutSharp style={{ color: '#fff', fontSize: '1.25rem', width: '25px', height: '25px' }} />,
   },
 ];

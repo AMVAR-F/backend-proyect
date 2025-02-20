@@ -9,6 +9,7 @@ const Groups = React.lazy(() => import('./views/matches/groups/principal'));
 const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
 const Results = React.lazy(() => import('./views/matches/results/result'));
 const Payments = React.lazy(() => import('./views/payments/App'));
+const LoginForm = React.lazy(() => import('./views/login/LoginForm'));
 
 
 const routes = [
@@ -22,6 +23,7 @@ const routes = [
   { path: '/matches/clashes', name: 'Groups', element: Clashes },
   { path: '/matches/results', name: 'Results', element: Results },
   { path: '/payments', name: 'Payments', element: Payments },
+  { path: '/login', name: 'Login', element: LoginForm },
 ];
 
 export default routes;

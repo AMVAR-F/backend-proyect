@@ -28,3 +28,54 @@ export const registerRequest = async (user) => {
   
     return response.json();
   };
+
+ 
+
+ export const lockAccountRequest = async (userId) => {
+     const token = localStorage.getItem('jwtToken'); // Obtén el token del localStorage
+
+     try {
+      const response = await fetch('http://localhost:4001/api/auth/locked', {
+             method: 'PUT',
+             headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${token}` // Incluye el token en la cabecera de autorización
+             },
+         });
+
+         if (!response.ok) {
+             const errorData = await response.json();
+             const errorMessage = errorData.message || response.statusText;
+             throw new Error(errorMessage);
+         }
+        return response.json();
+     } catch (error) {
+         console.error("Error en lockAccountRequest:", error);
+         throw error;
+     }
+ };
+
+export const logoutRequest = async () => {
+    const token = localStorage.getItem('jwtToken'); // Obtén el token del localStorage
+
+    try {
+      const response = await fetch('http://localhost:4001/api/auth/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || response.statusText;
+            throw new Error(errorMessage);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Error en logoutRequest:", error);
+        throw error;
+    }
+};
+ 

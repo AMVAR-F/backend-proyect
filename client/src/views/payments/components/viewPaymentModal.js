@@ -1,9 +1,16 @@
 import React, { useContext } from 'react';
-import { PaymentContext } from './PaymentContext';
 import { Modal, Button, Table, Badge } from 'react-bootstrap';
+import { PaymentContext } from './PaymentContext';
+import { tournamentFee } from '../data';
 
 const ViewPaymentModal = ({ show, onHide }) => {
-  const { currentPayment } = useContext(PaymentContext);
+  const { payments, currentPayment } = useContext(PaymentContext);
+
+  // Encuentra el pago actual en la lista de pagos o usa el pago actual si no se encuentra
+  const updatedPayment = payments.find(p => p.id === currentPayment?.id) || currentPayment;
+
+  // Si no hay pago actual, no renderizar nada
+  if (!updatedPayment) return null;
 
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -11,30 +18,47 @@ const ViewPaymentModal = ({ show, onHide }) => {
         <Modal.Title>Historial de Pagos</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p><strong>Equipo:</strong> {currentPayment?.team}</p>
-        <p><strong>Delegado:</strong> {currentPayment?.delegate}</p>
-        <p><strong>Monto Total:</strong> {currentPayment?.amount} {currentPayment?.currency}</p>
-        <p><strong>Estado:</strong> <Badge variant={currentPayment?.status === 'Pagado' ? 'success' : 'danger'}>{currentPayment?.status}</Badge></p>
+        <p><strong>Equipo:</strong> {updatedPayment.team}</p>
+        <p><strong>Delegado:</strong> {updatedPayment.delegate}</p>
+        <p><strong>Monto a Pagar:</strong> {tournamentFee} {updatedPayment.currency}</p>
+        <p><strong>Monto Abonado:</strong> {updatedPayment.amountPaid} {updatedPayment.currency}</p>
+        <p><strong>Estado:</strong>
+          <Badge bg={updatedPayment.status === 'Pagado' ? 'success' : 'danger'}>
+            {updatedPayment.status}
+          </Badge>
+        </p>
+
         <h4>Historial</h4>
         <Table bordered>
           <thead>
             <tr>
               <th>Fecha</th>
-              <th>Monto Pagado</th>
+              <th>Monto Abonado</th>
               <th>Estado</th>
             </tr>
           </thead>
           <tbody>
-            {currentPayment?.history?.length > 0 ? currentPayment.history.map((entry, index) => (
-              <tr key={index}>
-                <td>{entry.date}</td>
-                <td>{entry.amountPaid} {currentPayment.currency}</td>
-                <td><Badge variant={entry.status === 'Pagado' ? 'success' : 'danger'}>{entry.status}</Badge></td>
+            {updatedPayment.history && updatedPayment.history.length > 0 ? (
+              updatedPayment.history.map((entry, index) => (
+                <tr key={index}>
+                  <td>{entry.date instanceof Date ? entry.date.toLocaleDateString() : entry.date}</td>
+                  <td>{entry.amountPaid} {updatedPayment.currency}</td>
+                  <td>
+                    <Badge bg={entry.status === 'Pagado' ? 'success' : 'danger'}>
+                      {entry.status}
+                    </Badge>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3">No hay pagos registrados.</td>
               </tr>
-            )) : <tr><td colSpan="3">No hay pagos registrados.</td></tr>}
+            )}
           </tbody>
         </Table>
       </Modal.Body>
+      <br />
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Cerrar</Button>
       </Modal.Footer>

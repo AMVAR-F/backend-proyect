@@ -6,7 +6,7 @@ import { FaPlus, FaEye, FaEdit } from 'react-icons/fa';
 import { tournamentFee } from '../data'; 
 const PaymentList = ({ onInsert, onView, onEdit }) => { 
   const { payments, setCurrentPayment, teams } = useContext(PaymentContext); 
-
+  
   return ( 
     <Container className="mt-4"> 
       <h4 className="text-center mb-4">Gestión de Pagos de Torneos</h4> 

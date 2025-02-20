@@ -22,9 +22,9 @@ export const registerRequest = async (user) => {
       body: JSON.stringify(credentials),
     });
   
-    if (!response.ok) {
-      throw new Error('Error en el inicio de sesión');
-    }
+    // if (!response.ok) {
+    //   throw new Error('Error en el inicio de sesión');
+    // }
   
     return response.json();
   };

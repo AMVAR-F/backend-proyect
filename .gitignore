@@ -3,3 +3,5 @@ node_modules
 conection.js
 
 config.js
+client/src/views/api/auth.js
+client/src/views/login/LoginForm.js

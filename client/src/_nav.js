@@ -87,21 +87,10 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Report',
-    to: '/users/',
+    to: '/referee/',
     icon: < GiWhistle icon={cilUser} className="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Profile',
-    to: '/account/profile', 
-    icon: <BiSolidUserCircle style={{ color: '#fff', fontSize: '1.25rem', width: '25px', height: '25px' }} />,
-  },
-  {
-    component: CNavItem,
-    name: 'Log out',
-    to: '/login/logout/log_out/',
-    icon: <IoLogOutSharp style={{ color: '#fff', fontSize: '1.25rem', width: '25px', height: '25px' }} />,
-  },
+  
 ];
 
 export default _nav;

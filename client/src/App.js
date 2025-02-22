@@ -22,6 +22,7 @@ const Groups = React.lazy(() => import('./views/matches/groups/principal'));
 const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
 const Results = React.lazy(() => import('./views/matches/results/result'));
 const Payments = React.lazy(() => import('./views/payments/App'));
+const Referee = React.lazy(() => import('./views/referee/App'));
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -99,6 +100,7 @@ const App = () => {
               <Route path="/matches/clashes" element={<Clashes />} />
               <Route path="/matches/results" element={<Results />} />
               <Route path="/payments/payments" element={<Payments />} />
+              <Route path="/referee" element={<Referee />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
           ) : (

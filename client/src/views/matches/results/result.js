@@ -80,7 +80,7 @@ const MatchResults = () => {
       </h3>
 
       <h2>Resultados de Partidos Finalizados</h2>
-      <Table striped bordered hover>
+      <Table>
         <thead>
           <tr>
             <th>Equipo Local</th>

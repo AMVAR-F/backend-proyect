@@ -204,7 +204,7 @@ const closeViewModal = () => setModalView(false);
       <Button color="primary" onClick={viewModalInsert}>
         Create Tournament
       </Button>
-      <Table striped>
+      <Table>
         <thead>
           <tr>
             <th>ID</th>

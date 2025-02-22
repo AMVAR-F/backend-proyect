@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { useNavigate,NavLink } from 'react-router-dom'; // Importa useNavigate
 import { logoutRequest } from '../../views/api/auth';
 import {
   CAvatar,
@@ -8,7 +8,7 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react';
-import { cilLockLocked,} from '@coreui/icons';
+import { cilLockLocked, cilUser} from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import avatar8 from './../../assets/images/avatars/7.jpg';
 
@@ -34,10 +34,16 @@ const AppHeaderDropdown = () => {
                 <CAvatar src={avatar8} size="md" /> {/* <-- AÑADIDO */}
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
+            
+            <CDropdownItem as={NavLink} to="/account/profile"> {/* <-- Perfil */}
+                <CIcon icon={cilUser} className="me-2" />
+                Profile
+                </CDropdownItem>
                 <CDropdownItem onClick={handleLogout}>
-                    <CIcon icon={cilLockLocked} className="me-2" />
+                    <CIcon icon={cilLockLocked} className="me-2" />{/* <-- Cerrar sesion */}
                     Log Out
                 </CDropdownItem>
+
             </CDropdownMenu>
         </CDropdown>
     );

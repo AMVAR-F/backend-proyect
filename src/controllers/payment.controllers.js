@@ -1,6 +1,6 @@
 // payment.controllers.js
 
-import * as paymentModel from '../models/payment.models.js';
+import * as paymentModel from "../models/payment.models.js";
 
 export const getPayments = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ export const getPayments = async (req, res) => {
     res.json(payments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving payments' });
+    res.status(500).json({ message: "Error retrieving payments" });
   }
 };
 
@@ -17,12 +17,12 @@ export const getPaymentById = async (req, res) => {
   try {
     const payments = await paymentModel.getPaymentByIdFromDB(paymentId);
     if (payments.length === 0) {
-      return res.status(404).json({ message: 'Payment not found' });
+      return res.status(404).json({ message: "Payment not found" });
     }
     res.json(payments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving the payment' });
+    res.status(500).json({ message: "Error retrieving the payment" });
   }
 };
 
@@ -30,14 +30,14 @@ export const insertPayment = async (req, res) => {
   const {
     amount,
     payment_date: paymentDate,
-    status = 'Pending',
+    status = "Pending",
     status_p: statusP = true,
     id_treasurer: idTreasurer,
-    details
+    details,
   } = req.body;
 
   if (!amount || !paymentDate || !idTreasurer) {
-    return res.status(400).json({ message: 'Missing required fields' });
+    return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
@@ -46,7 +46,7 @@ export const insertPayment = async (req, res) => {
     res.status(201).json(newPayment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating the payment' });
+    res.status(500).json({ message: "Error creating the payment" });
   }
 };
 
@@ -55,17 +55,18 @@ export const deletePayment = async (req, res) => {
   try {
     const { rows, rowCount } = await paymentModel.deletePaymentById(paymentId);
     if (rowCount === 0) {
-      return res.status(404).json({ message: 'Payment not found' });
+      return res.status(404).json({ message: "Payment not found" });
     }
-    res.json({ message: 'Payment deleted successfully', payment: rows[0] });
+    res.json({ message: "Payment deleted successfully", payment: rows[0] });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error deleting the payment' });
+    res.status(500).json({ message: "Error deleting the payment" });
   }
 };
 export const updatePayment = async (req, res) => {
   const { paymentId } = req.params;
-  const { amount, paymentDate, status, statusP, idTreasurer, details } = req.body;
+  const { amount, paymentDate, status, statusP, idTreasurer, details } =
+    req.body;
 
   // Validación de campos requeridos
   if (!amount || !paymentDate || !idTreasurer) {
@@ -73,27 +74,35 @@ export const updatePayment = async (req, res) => {
   }
 
   // Validación del monto
-  if (typeof amount !== 'number' || amount <= 0) {
-    return res.status(400).json({ message: "Amount must be a positive number" });
+  if (typeof amount !== "number" || amount <= 0) {
+    return res
+      .status(400)
+      .json({ message: "Amount must be a positive number" });
   }
 
   try {
-    const { updatedPayment, historyRows } = await paymentModel.updatePayment(paymentId, { amount, paymentDate, status, statusP, idTreasurer }, details);
-    
+    const { updatedPayment, historyRows } = await paymentModel.updatePayment(
+      paymentId,
+      { amount, paymentDate, status, statusP, idTreasurer },
+      details
+    );
+
     res.status(200).json({
-      message: 'Payment updated successfully',
+      message: "Payment updated successfully",
       payment: updatedPayment,
       history: historyRows,
     });
-    
   } catch (error) {
-    console.error('Error updating payment:', error.message);
+    console.error("Error updating payment:", error.message);
 
-    if (error.message.includes('superior al monto total esperado')) {
-      return res.status(400).json({ message: 'Validation error: ' + error.message });
+    if (error.message.includes("superior al monto total esperado")) {
+      return res
+        .status(400)
+        .json({ message: "Validation error: " + error.message });
     }
 
-    res.status(500).json({ message: 'Error updating payment', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating payment", error: error.message });
   }
-}
-
+};

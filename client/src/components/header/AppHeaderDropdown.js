@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate,NavLink } from 'react-router-dom'; // Importa useNavigate
-import { logoutRequest } from '../../views/api/auth';
+import { logoutRequest } from '../../views/services/auth';
 import {
   CAvatar,
   CDropdown,
